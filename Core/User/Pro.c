@@ -26,6 +26,8 @@ static uint8_t Vbus28_Full_Flag;
 static uint32_t tick_V28check;
 static uint32_t Unlock_ENS_tick;
 static uint8_t  SSPC_ACK_flag;
+static uint8_t P1_UNLOCK_V = 0;
+static uint8_t P2_UNLOCK_V = 0;
 uint8_t SSPC_Data[8];
 
 /*端口初始状态*/
@@ -41,6 +43,7 @@ uint8_t ENG_Start_Lock1;			//接收到打火命令就置1,避免重复进入打火流程，0：可以进
 uint8_t ENG_Start_Lock2;			//发动机2启动控制
 uint8_t ENG_Stop_Lock;
 uint8_t Eng_Num_Flag;  				// 1：发动机1 0：发动机2
+uint8_t lock_channel = 0;   // 保存锁定时的通道号
 
 #define MAX_FRAME_PER_CALL  60   	// 每次最多处理20帧，可根据实际情况调整
 volatile uint8_t sspc_ack_received = 0;
@@ -258,11 +261,10 @@ void SSPC_Cmd(uint32_t now,uint8_t *Data)
 {
     switch(Data[2])
 	{
-		case SSPC_STAT_LOCK_ERR       : SSPC_Lock_flag ++;break;
+		case SSPC_STAT_LOCK_ERR       : SSPC_Lock_flag ++;lock_channel = Data[3];break;
 		case SSPC_STAT_REPORT_VIN_TEMP :
 		case SSPC_STAT_REPORT_VOUT_I  : SSPC_CHN_Read(now,&Read_data,Data);break;
-		case SSPC_STAT_CMD_ACK        :	if(SSPC_Lock_flag!=0&&Data[6] == 0x4F &&Data[7] == 0x4B
-			                               && SKY_GND_FLAG == GPIO_PIN_SET)
+		case SSPC_STAT_CMD_ACK        :	if(SSPC_Lock_flag!=0&&Data[6] == 0x4F &&Data[7] == 0x4B)
 		                                 {
 											SSPC_ACK_flag = 1;
 										 };break;
@@ -518,11 +520,11 @@ void SSPC_CHN_Unlock(uint32_t now,uint8_t *data)
 	
 	if(time == 1)
 	{
-	    if(data[3] <= SSPC_CHN_4)
+	    if(lock_channel <= SSPC_CHN_4 && P1_UNLOCK_V)
 	    {
 		    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_UNLOCK,SSPC_CHN_1_4,0);/*锟斤拷锟酵?锟斤拷锟斤拷锟斤拷*/
 	    }
-	    else 
+	    else if (lock_channel>= SSPC_CHN_5 && lock_channel <= SSPC_CHN_8 && P2_UNLOCK_V)
 	    {
 		    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_UNLOCK,SSPC_CHN_5_8,0);
 	    }
@@ -555,8 +557,7 @@ void SSPC_CHN_Unlock(uint32_t now,uint8_t *data)
  * @brief  SSPC读取操作
  * @retval 
  */
-void 
-SSPC_CHN_Read(uint32_t now,FC_SendData* readdata,uint8_t data[8])
+void SSPC_CHN_Read(uint32_t now,FC_SendData* readdata,uint8_t data[8])
 {
 	switch(data[3])
 	{
@@ -567,7 +568,13 @@ SSPC_CHN_Read(uint32_t now,FC_SendData* readdata,uint8_t data[8])
 		case SSPC_CHN_8:   readdata->Ichn8H = data[6];readdata->Ichn8L = data[7]; break;
 		case SSPC_CHN_5_8: readdata->Vchn8H = data[4];readdata->Vchn8L = data[5];
 							//Vcheck_28Vbus(now,data[4],data[5]);
-											 break;
+							if (Byte2_TO_U16(data[4],data[5]) > 0x2710)
+							{P2_UNLOCK_V = 1;}
+							else{P2_UNLOCK_V = 0;}
+							break;
+		case SSPC_CHN_1_4 : if(Byte2_TO_U16(data[4],data[5]) > 0x2710){P1_UNLOCK_V = 1;}
+							else{P1_UNLOCK_V = 0;}
+							break;
 		default :break;
 	}
 }
@@ -591,7 +598,7 @@ void Log_UnlockOp(uint16_t id)
 	 LogChannelOp(CHN_6,SSPC_FUNC_UNLOCK,0);
 	 LogChannelOp(CHN_7,SSPC_FUNC_UNLOCK,0);
 	 LogChannelOp(CHN_8,SSPC_FUNC_UNLOCK,0);
- }
+ } 
 }
 
 /**
@@ -703,7 +710,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
     else
     {
-
         sky_gnd_key.curr_read = now_io;
         sky_gnd_key.filter_cnt = 0;
     }

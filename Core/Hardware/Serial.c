@@ -67,7 +67,7 @@ uint8_t UART_SendData(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t len)
 }
 
 /**
-* @brief 鍙屽瓧鎷兼帴16浣嶆棤绗﹀彿鏁存暟
+* @brief 16位数据合成
 * @retval
 */
 uint16_t Byte2_TO_U16(uint8_t high,uint8_t low)

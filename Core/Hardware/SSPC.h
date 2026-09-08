@@ -30,8 +30,7 @@ typedef struct{
 	OpCmd_t  buf[OP_BUF_DEPTH];  //储存数组深度
 	uint16_t wr_idx;             //写指针
 	uint16_t rd_idx;             //读指针：标记最旧的一条指令
-	uint16_t cnt;                //当前记录条数
-	
+	uint16_t cnt;                //当前记录条数	
 }OpChn_t;
 
 void OpChn_Sys_Init(void);
