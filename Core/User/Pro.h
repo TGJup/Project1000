@@ -13,17 +13,13 @@
 #define Wait_SSPC_LED     1000U
 #define Wait_SSPC_28V     5000U
 
-#define CAN_QUEUE_SIZE  16 //缓冲队列大小
+#define CAN_QUEUE_SIZE  16 //������д�С
 
 typedef struct {
     uint8_t data[8];
     uint32_t id;
 } CAN_Frame_t;
 
-
-extern volatile uint8_t queue_head; //队首索引（读位置）
-extern volatile uint8_t queue_tail;// 队尾索引（写位置）
-extern volatile uint8_t queue_count;// 当前队列中的帧数
 
 typedef struct{
 	
@@ -61,16 +57,16 @@ void SSPC_Set(void);
 void SSPC_Init(uint8_t flag);
 void Vcheck_28Vbus(uint32_t now,uint8_t VH,uint8_t VL);
 /** 
- * @brief  CAN帧入队
- * @param  data: 帧数据
- * @param  id: 帧ID
+ * @brief  CAN帧入�?
+ * @param  data: 帧数�?
+ * @param  id: ֡ID
  * @retval  
  * */
 void CAN_Enqueue(uint8_t *data, uint32_t id);
 
 /**
-  * @brief 从队列中取出所有待处理帧并依次执行
-  * @param now 当前系统时间（HAL_GetTick()）
+  * @brief �Ӷ�����ȡ�����д�����֡������ִ��
+  * @param now 当前系统时间（HAL_GetTick()�?
   */
 void Process_CAN_Queue(uint32_t now);
 #endif

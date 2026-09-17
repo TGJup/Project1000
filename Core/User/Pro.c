@@ -150,10 +150,10 @@ void FC_IO_CMD(uint8_t cmd,uint8_t eng)
 				if(ENG_Start_Lock1 != 1 && ENG_Start_In_Progress == 0)
 				{
 					ENG_Start_In_Progress = 1;
-					ENG_Start_Lock1 = 1;				//发动机1点火打开通道4
+					ENG_Start_Lock1 = 1;				//发动机1点火打开通道3
 				    ENG_StartTick  = HAL_GetTick(); 
-                    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_OPEN,SSPC_CHN_4,0);
-				    LogChannelOp(CHN_4,SSPC_FUNC_CHN_OPEN,0);
+                    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_OPEN,SSPC_CHN_3,0);
+				    LogChannelOp(CHN_3,SSPC_FUNC_CHN_OPEN,0);
 				}
 			}
 			if(cmd&0x40)
@@ -197,8 +197,8 @@ void FC_IO_CMD(uint8_t cmd,uint8_t eng)
 					ENG_Start_In_Progress = 1;
 					ENG_Start_Lock2 = 1;
 				    ENG_StartTick  = HAL_GetTick(); 
-                    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_OPEN,SSPC_CHN_8,0);
-				    LogChannelOp(CHN_8,SSPC_FUNC_CHN_OPEN,0);
+                    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_OPEN,SSPC_CHN_4,0);
+				    LogChannelOp(CHN_4,SSPC_FUNC_CHN_OPEN,0);
 				}
 			}
 			if(cmd&0x40)
@@ -296,8 +296,8 @@ void ENG_START_6S(uint32_t now)
 			if(ENG_Start_Finsh_Lock1 == 0)		//点火大于6秒
 			{
 				ENG_Start_Finsh_Lock1 = 1;		// 进入点火流程且大于6秒后，重新给ENG_Start_Finsh_Lock置1
-				SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_CLOSE,SSPC_CHN_4,0);	// 点火完毕，关闭通道4
-				LogChannelOp(CHN_4,SSPC_FUNC_CHN_CLOSE,0);
+				SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_CLOSE,SSPC_CHN_3,0);	// 点火完毕，关闭通道3
+				LogChannelOp(CHN_3,SSPC_FUNC_CHN_CLOSE,0);
 			}
 			ENG_Start_Lock1 = 0;					//可以重新进入点火流程
 			ENG_Start_In_Progress = 0;  			//释放互斥，允许另一台发动机启动
@@ -316,8 +316,8 @@ void ENG_START_6S(uint32_t now)
 			if(ENG_Start_Finsh_Lock2 == 0)		//点火大于6秒
 			{
 				ENG_Start_Finsh_Lock2 = 1;		// 进入点火流程且大于6秒后，重新给ENG_Start_Finsh_Lock置1
-				SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_CLOSE,SSPC_CHN_8,0);	// 点火完毕，关闭通道8
-				LogChannelOp(CHN_8,SSPC_FUNC_CHN_CLOSE,0);
+				SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_CLOSE,SSPC_CHN_4,0);	// 点火完毕，关闭通道4
+				LogChannelOp(CHN_4,SSPC_FUNC_CHN_CLOSE,0);
 			}
 			ENG_Start_Lock2 = 0;					//可以重新进入点火流程
 			ENG_Start_In_Progress = 0;  			//释放互斥，允许另一台发动机启动

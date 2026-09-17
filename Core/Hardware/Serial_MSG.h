@@ -22,6 +22,7 @@
 #define EP_Rsp_Len           13
 #define EP_Report_ADR        0x01
 #define EP_Send_Cycle        30
+#define EP_ACK_Timeout       100      /* 等待电池应答的超时(ms)，超时则解锁重新查询 */
 
 #define EP_GET_UI            0U
 #define EP_GET_STATUS        1U

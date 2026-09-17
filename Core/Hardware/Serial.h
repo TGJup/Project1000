@@ -23,12 +23,12 @@ typedef struct{
 
 typedef struct{
 	
-	uint16_t volt_acc;                   //ç´¯è®¡æ€»å‹
-	uint16_t volt_collect;               //é‡‡é›†ç”µå‹
-	int16_t  raw_current;                //ç”µæµåŸå§‹å€¼
-	int16_t  current;                    //çœŸå®ç”µæµ = ç”µæµåŸå§‹å€¼ - 30000
-	uint16_t soc_raw;                    //å½“å‰ç”µé‡åŸå§‹å€¼
-	float    soc;                        //å½“å‰ç”µé‡å€¼
+	uint16_t volt_acc;                   //ÀÛ¼Æ×ÜÑ¹
+	uint16_t volt_collect;               //²É¼¯µçÑ¹
+	int16_t  raw_current;                //µçÁ÷Ô­Ê¼Öµ
+	int16_t  current;                    //ÕæÊµµçÁ÷ = µçÁ÷Ô­Ê¼Öµ - 30000
+	uint16_t soc_raw;                    //µ±Ç°µçÁ¿Ô­Ê¼Öµ
+	float    soc;                        //µ±Ç°µçÁ¿Öµ
 	float    total_volt_acc_real;        //
 	float    total_volt_collect_real;    //
 	

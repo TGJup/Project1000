@@ -6,15 +6,12 @@
 
 extern CAN_HandleTypeDef hcan;
 extern IWDG_HandleTypeDef hiwdg;
-/*变量*/
+/*����*/
 volatile uint8_t CAN_RxFinish;
 uint8_t CAN_SendBuff[8] = {0};
 uint32_t CAN_ID = 0;
 
-extern volatile uint8_t queue_head;
-extern volatile uint8_t queue_tail;
-extern volatile uint8_t queue_count;
-extern CAN_Frame_t can_queue[];
+
 extern volatile uint8_t sspc_ack_received;
 //设置Filter过滤，使能FIFO0，并不过滤任何信�?
 extern volatile uint16_t latest_28V_value;
