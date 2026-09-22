@@ -346,7 +346,7 @@ void USART3_LoopCall(void)
 	if(U3_wait_ack == 0)
 		{
 				
-			U3_wait_ack =1;
+			//U3_wait_ack =1;
 			if(HAL_GetTick() - U3_last_tick >EP_Send_Cycle && EP_Packet_Make(EP_CMD_0x90_ASK) == 0)
         {
 			U3_last_tick = HAL_GetTick();
@@ -420,7 +420,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         }
         else if(USART3_RxIdx >=2)
         {
-            if(USART3_RxFrame[0]==EP_Packet_Head1 && (USART3_RxFrame[1]==EP_28V_Address || USART3_RxFrame[1]==EP_12V_Address))
+            if(USART3_RxFrame[0]==EP_Packet_Head1 && (USART3_RxFrame[1]==EP_28V_Address))
             {
                 if(USART3_RxIdx >= EP_Rsp_Len)
                 {
@@ -464,3 +464,33 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
     }
 }
 
+/**
+ * @brief  串口错误回调（重点处理 ORE 溢出错误）
+ * @note   HAL 检测到 ORE 时会调用 UART_EndRxTransfer()：关掉 RXNEIE、
+ *         把 RxState 置回 READY 并中止本次接收。
+ *         如果这里不重新挂上中断接收，串口会变成“能发不能收”的永久失聪状态。
+ * @param  huart: 串口句柄
+ * @retval 
+ */
+/*
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if(huart->Instance == USART1)
+    {
+        __HAL_UART_CLEAR_OREFLAG(huart);          // 清 ORE 标志：F1 上必须先读 SR 再读 DR
+        if(HAL_UART_Receive_IT(&huart1, USART1_RXBuffer, 1) == HAL_OK)
+        {
+            USART1_RxIdx = 0;                     // 接收确已被中止，帧计数清零，等下一个帧头
+        }
+    }
+    else if(huart->Instance == USART3)
+    {
+        __HAL_UART_CLEAR_OREFLAG(huart);
+        if(HAL_UART_Receive_IT(&huart3, USART3_RXBuffer, 1) == HAL_OK)
+        {
+            USART3_RxIdx = 0;
+        }
+    }
+    huart->ErrorCode = HAL_UART_ERROR_NONE;       // 清错误码，避免 ORE 残留
+}
+*/

@@ -561,9 +561,9 @@ void SSPC_CHN_Read(uint32_t now,FC_SendData* readdata,uint8_t data[8])
 {
 	switch(data[3])
 	{
-		case SSPC_CHN_1:   readdata->Vbus12H = data[4];readdata->Vbus12L = data[5];break;
-		case SSPC_CHN_5:   readdata->Ichn5H = data[6];readdata->Ichn5L = data[7];  break;
-		case SSPC_CHN_6:   readdata->Ichn6H = data[6];readdata->Ichn6L = data[7];  break;
+		case SSPC_CHN_1:   break;
+		case SSPC_CHN_5:  if(data[2] == SSPC_STAT_REPORT_VOUT_I){readdata->Ichn5H = data[6];readdata->Ichn5L = data[7];}  break;
+		case SSPC_CHN_6:  if(data[2] == SSPC_STAT_REPORT_VOUT_I){readdata->Ichn6H = data[6];readdata->Ichn6L = data[7];}  break;
 	//case SSPC_CHN_7:   readdata->Ichn7H = data[6];readdata->Ichn7L = data[7];  break;
 		case SSPC_CHN_8:   readdata->Ichn8H = data[6];readdata->Ichn8L = data[7]; break;
 		case SSPC_CHN_5_8: readdata->Vchn8H = data[4];readdata->Vchn8L = data[5];
@@ -572,7 +572,8 @@ void SSPC_CHN_Read(uint32_t now,FC_SendData* readdata,uint8_t data[8])
 							{P2_UNLOCK_V = 1;}
 							else{P2_UNLOCK_V = 0;}
 							break;
-		case SSPC_CHN_1_4 : if(Byte2_TO_U16(data[4],data[5]) > 0x2710){P1_UNLOCK_V = 1;}
+		case SSPC_CHN_1_4 : readdata->Vbus12H = data[4];readdata->Vbus12L = data[5];
+							if(Byte2_TO_U16(data[4],data[5]) > 0x2710){P1_UNLOCK_V = 1;}
 							else{P1_UNLOCK_V = 0;}
 							break;
 		default :break;

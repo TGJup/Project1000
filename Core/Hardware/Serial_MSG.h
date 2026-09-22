@@ -11,14 +11,14 @@
 #define FC_Zero_Time         3000
 
 #define EP_Packet_Head1      0xA5     
-#define EP_Packet_Head2      0x41    
+#define EP_Packet_Head2      0x40    
 #define EP_Packet_Len        13      
 #define EP_CMD_0x90_ASK      0x90
 #define EP_CMD_0x98_ASK      0x98
 
 #define EP_Packet_Check_Len  12       
-#define EP_12V_Address       0x01
-#define EP_28V_Address       0x02
+//#define EP_12V_Address       0x01
+#define EP_28V_Address       0x01
 #define EP_Rsp_Len           13
 #define EP_Report_ADR        0x01
 #define EP_Send_Cycle        30
