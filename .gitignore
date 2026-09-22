@@ -108,4 +108,24 @@ ehthumbs.db
 # ================================
 *.log
 *.BAT
-
+*.md
+*.py
+.workbuddy/
+.workbuddy/memory/2026-09-17.md
+.workbuddy/memory/2026-09-17.md
+.workbuddy/memory/2026-09-17.md
+.workbuddy/memory/2026-09-18.md
+.workbuddy/memory/2026-09-17.md
+.workbuddy/memory/2026-09-17.md
+.workbuddy/memory/2026-09-17.md
+.workbuddy/memory/2026-09-17.md
+.workbuddy/memory/2026-09-17.md
+.workbuddy/tmp/u3_fix_compare.py
+.workbuddy/tmp/u3_query_sim.py
+.workbuddy/tmp/u3_statemachine_sim.py
+.workbuddy/memory/2026-09-17.md
+.workbuddy/tmp/add_ore_fix.py
+.workbuddy/tmp/verify_ore_fix.py
+.workbuddy/memory/2026-09-17.md
+.workbuddy/tmp/Serial.c.bak_20260918_084204
+.workbuddy/memory/2026-09-17.md
