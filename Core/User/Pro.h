@@ -23,9 +23,9 @@ typedef struct {
 
 typedef struct{
 	
-	GPIO_PinState curr_read;     //锟斤拷锟斤拷锟斤拷前状态
-	GPIO_PinState last_stable;   //锟斤拷锟斤拷锟饺讹拷状态
-	uint32_t      filter_cnt;    //锟斤拷锟斤拷锟斤拷时
+	GPIO_PinState curr_read;     //当前读取状态
+	GPIO_PinState last_stable;   //上一次稳定状态
+	uint32_t      filter_cnt;    //滤波计时
 	
 }KEY;
 
@@ -57,8 +57,8 @@ void SSPC_Set(void);
 void SSPC_Init(uint8_t flag);
 void Vcheck_28Vbus(uint32_t now,uint8_t VH,uint8_t VL);
 /** 
- * @brief  CAN甯у叆闃?
- * @param  data: 甯ф暟鎹?
+ * @brief  CAN帧入队
+ * @param  data: 帧数据
  * @param  id: 帧ID
  * @retval  
  * */
@@ -66,7 +66,7 @@ void CAN_Enqueue(uint8_t *data, uint32_t id);
 
 /**
   * @brief 从队列中取出所有待处理帧并依次执行
-  * @param now 褰撳墠绯荤粺鏃堕棿锛圚AL_GetTick()锛?
+  * @param now 当前系统时间（HAL_GetTick()）
   */
 void Process_CAN_Queue(uint32_t now);
 #endif
