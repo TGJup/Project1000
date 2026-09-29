@@ -128,3 +128,11 @@ ehthumbs.db
 .workbuddy/memory/2026-09-17.md
 .workbuddy/tmp/Serial.c.bak_20260918_084204
 .workbuddy/memory/2026-09-17.md
+Drivers/CMSIS/DSP/DSP_Lib_TestSuite/Common/platform/ARMCC/startup_armv6-m.s
+Drivers/CMSIS/DSP/DSP_Lib_TestSuite/Common/platform/startup_generic.S
+Drivers/CMSIS/DSP/DSP_Lib_TestSuite/Common/platform/ARMCC/startup_armv7-m.s
+Drivers/CMSIS/DSP/DSP_Lib_TestSuite/Common/platform/ARMCLANG/startup_armv6-m.S
+Drivers/CMSIS/DSP/DSP_Lib_TestSuite/Common/platform/GCC/startup_armv6-m.S
+Drivers/CMSIS/DSP/DSP_Lib_TestSuite/Common/platform/GCC/startup_armv7-m.S
+Drivers/CMSIS/DSP/DSP_Lib_TestSuite/Common/platform/ARMCLANG/startup_armv7-m.S
+Drivers/CMSIS/DSP/Source/TransformFunctions/arm_bitreversal2.S
