@@ -124,6 +124,7 @@ void FC_Packet_Make(FC_SendData *data)
 * @param *p_Socï¼šè¾“å‡ºSOCåŽŸå?‹å€?
 * @retval
 */
+/*
 void EP_DataCombine(uint8_t *buf,uint16_t*p_accVolt,uint16_t*p_collectVolt,
 	                  int16_t*p_rawCurr,uint16_t*p_Soc)
 {
@@ -132,7 +133,7 @@ void EP_DataCombine(uint8_t *buf,uint16_t*p_accVolt,uint16_t*p_collectVolt,
 	*p_rawCurr     = Byte2_TO_U16(buf[8],buf[9]);
 	*p_Soc         = Byte2_TO_U16(buf[10],buf[11]);
 }
-
+*/
 /**
 * @brief æ•°æ®æ¢ç®—åŠæ¬è¿ï¼ˆåº”æ€¥ç”µæºï¼‰
 * @param *buf            :è¯»å–åº”æ€¥ç”µæºæŽ¥æ”¶æ•°æ?åŒ?
@@ -146,7 +147,7 @@ void EP_DataCombine(uint8_t *buf,uint16_t*p_accVolt,uint16_t*p_collectVolt,
 * @param *out_soc        :è¾“å‡ºç”µé‡å®žé™…å€?
 * @retval
 */
-
+/*
 void EP_0x90_Convert(uint8_t *buf,uint16_t*raw_accVolt,
 	                   uint16_t*raw_collectVolt,int16_t*raw_Curr,uint16_t*raw_soc,
                      float *out_accVolt,float *out_collectVolt,
@@ -159,6 +160,7 @@ void EP_0x90_Convert(uint8_t *buf,uint16_t*raw_accVolt,
 	*out_curr        = (float)*raw_Curr -30000;
 	*out_soc         = (float)*raw_soc*0.1f;
 }
+    */
 /**
 * @brief ä¸²å£ä¸‰åº”æ€¥ç”µæºçŠ¶æ€è?»å–
 * @param type: 0:ç”µåŽ‹çŠ¶æ€? 1ï¼šç”µæµçŠ¶æ€?
@@ -166,6 +168,7 @@ void EP_0x90_Convert(uint8_t *buf,uint16_t*raw_accVolt,
 * @retval type0ï¼?0x80:ç”µåŽ‹è¿‡åŽ‹ 0x88ï¼šç”µåŽ‹æ¬ åŽ?
 * @retval type1: 0x00:ç”µæµæ­£å¸¸ 0x80ï¼šç”µæµè¿‡æµ?
 */
+/*
 uint8_t EP_Status_Read(uint8_t type,uint8_t *data)
 {
 	if(type == 0)
@@ -179,7 +182,7 @@ uint8_t EP_Status_Read(uint8_t type,uint8_t *data)
 	}
 	return 0;
 }
-
+*/
 /**
 * @brief ´®¿ÚÈýÊý¾Ý´ò°ü
 * @param *data: ´«ÈëÊý×é
@@ -207,8 +210,8 @@ uint8_t USART3_EP_RE(FC_SendData *data)
 	{
         if(buf[1] == EP_28V_Address)
         {
-            data->Ep_collect_V_H = buf[6];
-		    data->Ep_collect_V_L = buf[7];
+            data->Ep_collect_V_H = buf[4];
+		    data->Ep_collect_V_L = buf[5];
 	        data->Ep_Current_H   = buf[8];
 		    data->Ep_Current_L   = buf[9];
 		    return temp =5;
@@ -261,7 +264,7 @@ uint8_t EP_Packet_Make(uint8_t cmd)
     USART3_TXBuffer[10] = 0x00;
     USART3_TXBuffer[11] = 0x00;
 	
-	USART3_TXBuffer[12] = Calc_CheckSum(USART3_TXBuffer, 7);
+	USART3_TXBuffer[12] = Calc_CheckSum(USART3_TXBuffer, 12);
 	UART_SendData(&huart3,USART3_TXBuffer,EP_Packet_Len);
   return 0;
 }
@@ -343,6 +346,13 @@ void USART3_LoopCall(void)
 			  U3_wait_ack = 0;
 			  USART3_RxFinish = 0;
 		 }
+    /* Ó¦´ð³¬Ê±½âËø£º·¢²éÑ¯ºó EP_ACK_Timeout(100ms) ÄÚÃ»µÈµ½ºÏ·¨Ó¦´ð¾Í½âËøÖØ²é
+	   ·ñÔò U3_wait_ack »áÓÀ¾ÃÍ£ÔÚ 1 ¡ª¡ª ´®¿Ú3 Ö»²éÒ»´Î£¬´®¿Ú1 ÓÀ¾Ã¾²Ä¬ */
+	if(U3_wait_ack == 1 && HAL_GetTick() - U3_last_tick > EP_ACK_Timeout)
+		{
+			U3_last_tick = HAL_GetTick();
+			U3_wait_ack = 0;
+		}
 	if(U3_wait_ack == 0)
 		{
 				
@@ -472,7 +482,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
  * @param  huart: ´®¿Ú¾ä±ú
  * @retval 
  */
-/*
+
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
     if(huart->Instance == USART1)
@@ -493,4 +503,4 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     }
     huart->ErrorCode = HAL_UART_ERROR_NONE;       // Çå´íÎóÂë£¬±ÜÃâ ORE ²ÐÁô
 }
-*/
+
