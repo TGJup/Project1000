@@ -5,12 +5,12 @@
 #include "OLED.h"
 #include "LED.h"
 /*USART1
-PA9ï¼? TX
-PA10ï¼šRX*/
+PA9£ºTX
+PA10£ºRX*/
 
 /*USART3
-PB10ï¼? TX
-PB11ï¼? RX*/
+PB10£ºTX
+PB11£ºRX*/
 
 
 extern UART_HandleTypeDef huart1;
@@ -116,13 +116,13 @@ void FC_Packet_Make(FC_SendData *data)
 
 
 /**
-* @brief æ•°æ®æ‹¼æŽ¥åŠæ¬è¿ï¼ˆåº”æ€¥ç”µæºï¼‰
-* @param *buf:è¯»å–åº”æ€¥ç”µæºæŽ¥æ”¶æ•°æ?åŒ?
-* @param *p_accVolt: è¾“å‡ºç´?è®¡æ€»åŽ‹åŽŸå?‹å€?
-* @param *p_collectVolt:è¾“å‡ºé‡‡é›†æ€»åŽ‹åŽŸå?‹å€?
-* @param *p_rawCurr:è¾“å‡ºç”µæµåŽŸå?‹å€?
-* @param *p_Socï¼šè¾“å‡ºSOCåŽŸå?‹å€?
-* @retval
+* @brief Êý¾ÝÆ´½Ó¼°°áÔË£¨Ó¦¼±µçÔ´£©
+* @param *buf: ¶ÁÈ¡Ó¦¼±µçÔ´½ÓÊÕÊý¾ÝÇø
+* @param *p_accVolt: Êä³öÀÛ¼Æ×ÜÑ¹Ô­Ê¼Öµ
+* @param *p_collectVolt: Êä³ö²É¼¯×ÜÑ¹Ô­Ê¼Öµ
+* @param *p_rawCurr: Êä³öµçÁ÷Ô­Ê¼Öµ
+* @param *p_Soc: Êä³öSOCÔ­Ê¼Öµ
+* @retval ÎÞ
 */
 /*
 void EP_DataCombine(uint8_t *buf,uint16_t*p_accVolt,uint16_t*p_collectVolt,
@@ -135,16 +135,16 @@ void EP_DataCombine(uint8_t *buf,uint16_t*p_accVolt,uint16_t*p_collectVolt,
 }
 */
 /**
-* @brief æ•°æ®æ¢ç®—åŠæ¬è¿ï¼ˆåº”æ€¥ç”µæºï¼‰
-* @param *buf            :è¯»å–åº”æ€¥ç”µæºæŽ¥æ”¶æ•°æ?åŒ?
-* @param *raw_accVolt    : è¾“å‡ºç´?è®¡æ€»åŽ‹åŽŸå?‹å€?
-* @param *raw_collectVolt:è¾“å‡ºé‡‡é›†æ€»åŽ‹åŽŸå?‹å€?
-* @param *raw_Curr       :è¾“å‡ºç”µæµåŽŸå?‹å€?
-* @param *raw_Soc        :è¾“å‡ºSOCåŽŸå?‹å€?
-* @param *out_accVolt    :è¾“å‡ºç´?è®¡ç”µåŽ‹å®žé™…å€?
-* @param *out_collectVolt:è¾“å‡ºé‡‡é›†ç”µåŽ‹å®žé™…å€?
-* @param *out_curr       :è¾“å‡ºç”µæµå®žé™…å€?
-* @param *out_soc        :è¾“å‡ºç”µé‡å®žé™…å€?
+* @brief Êý¾Ý»»Ëã¼°°áÔË£¨Ó¦¼±µçÔ´£©
+* @param *buf            : ¶ÁÈ¡Ó¦¼±µçÔ´½ÓÊÕÊý¾ÝÇø
+* @param *raw_accVolt    : Êä³öÀÛ¼Æ×ÜÑ¹Ô­Ê¼Öµ
+* @param *raw_collectVolt: Êä³ö²É¼¯×ÜÑ¹Ô­Ê¼Öµ
+* @param *raw_Curr       : Êä³öµçÁ÷Ô­Ê¼Öµ
+* @param *raw_Soc        : Êä³öSOCÔ­Ê¼Öµ
+* @param *out_accVolt    : Êä³öÀÛ¼ÆµçÑ¹Êµ¼ÊÖµ
+* @param *out_collectVolt: Êä³ö²É¼¯µçÑ¹Êµ¼ÊÖµ
+* @param *out_curr       : Êä³öµçÁ÷Êµ¼ÊÖµ
+* @param *out_soc        : Êä³öµçÁ¿Êµ¼ÊÖµ
 * @retval
 */
 /*
@@ -162,11 +162,11 @@ void EP_0x90_Convert(uint8_t *buf,uint16_t*raw_accVolt,
 }
     */
 /**
-* @brief ä¸²å£ä¸‰åº”æ€¥ç”µæºçŠ¶æ€è?»å–
-* @param type: 0:ç”µåŽ‹çŠ¶æ€? 1ï¼šç”µæµçŠ¶æ€?
-* @param data: ä¼ å…¥æ•°ç»„
-* @retval type0ï¼?0x80:ç”µåŽ‹è¿‡åŽ‹ 0x88ï¼šç”µåŽ‹æ¬ åŽ?
-* @retval type1: 0x00:ç”µæµæ­£å¸¸ 0x80ï¼šç”µæµè¿‡æµ?
+* @brief ´®¿ÚÈýÓ¦¼±µçÔ´×´Ì¬¶ÁÈ¡
+* @param type: 0£ºµçÑ¹×´Ì¬  1£ºµçÁ÷×´Ì¬
+* @param data: ´«ÈëÊý×é
+* @retval type0£º0x80£ºµçÑ¹¹ýÑ¹  0x88£ºµçÑ¹Ç·Ñ¹
+* @retval type1£º0x00£ºµçÁ÷Õý³£  0x80£ºµçÁ÷¹ýÁ÷
 */
 /*
 uint8_t EP_Status_Read(uint8_t type,uint8_t *data)
@@ -271,9 +271,9 @@ uint8_t EP_Packet_Make(uint8_t cmd)
 
 
 /**
- * @brief ä¸²å£å‘é€å¿™è¶…æ—¶ç­‰å¾…
- * @param huart ä¸²å£å¥æŸ„
- * @retval 0ç­‰å¾…æˆåŠŸç©ºé—² 1è¶…æ—¶å¤±è´¥
+ * @brief ´®¿Ú·¢ËÍÃ¦³¬Ê±µÈ´ý
+ * @param huart ´®¿Ú¾ä±ú
+ * @retval 0£ºµÈ´ý³É¹¦¿ÕÏÐ  1£º³¬Ê±Ê§°Ü
  */
 uint8_t UART_TimeOut(UART_HandleTypeDef *huart)
 {

@@ -11,7 +11,7 @@
 
 extern IWDG_HandleTypeDef hiwdg;
 KEY sky_gnd_key;
-/*ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½*/
+/*´®¿ÚÏà¹Ø±äÁ¿*/
 extern UART_HandleTypeDef huart1;
 extern uint8_t USART1_RxFrame[32];
 extern uint8_t USART1_RxFinish;
@@ -389,21 +389,21 @@ void OLED_ShowCANWord(void)
 }
 
 /**
-* @brief SSPCï¿½ï¿½ï¿½ï¿½
+* @brief SSPCÉèÖÃ
 * @param 
 */
 void SSPC_Set(void)
 {
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_CLOSE,SSPC_CHN_ALL,0);      //ï¿½Ø±Õ¹ï¿½ï¿½ï¿½Í¨ï¿½ï¿½
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_REPORT_CYC,0,0x1E8480);     //ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½50ms
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CHN_CLOSE,SSPC_CHN_ALL,0);      //¹Ø±ÕËùÓÐÍ¨µÀ
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_REPORT_CYC,0,0x1E8480);     //ÉÏ±¨ÖÜÆÚ50ms
 	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_UVP,SSPC_CHN_ALL,0x2710);   //Ç·Ñ¹10V
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_OVP,SSPC_CHN_ALL,0x7530);   //ï¿½ï¿½Ñ¹50V
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_5_8,0xC350);  //Í¨ï¿½ï¿½5-8ï¿½î¶¨ï¿½ï¿½ï¿½ï¿½50A
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_1,0x7530);    //Í¨ï¿½ï¿½1  ï¿½î¶¨ï¿½ï¿½ï¿½ï¿½30A
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_2,0x2710);    //Í¨ï¿½ï¿½234ï¿½î¶¨ï¿½ï¿½ï¿½ï¿½10A
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_3,0x2710);
-	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_4,0x2710);
-	//SSPC_SendCmd(SSPC_ID,SSPC_FUNC_SAVE_FLASH,0,0);              //ï¿½ï¿½ï¿½ï¿½
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_OVP,SSPC_CHN_ALL,0x7530);   //¹ýÑ¹50V
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_5_8,0xC350);  //Í¨µÀ5-8¶î¶¨µçÁ÷50A
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_1,0x7530);    //Í¨µÀ1  ¶î¶¨µçÁ÷30A
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_2,0x2710);    //Í¨µÀ2¶î¶¨µçÁ÷10A
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_3,0x2710);    //Í¨µÀ3¶î¶¨µçÁ÷10A
+	SSPC_SendCmd(SSPC_ID,SSPC_FUNC_CFG_CURR,SSPC_CHN_4,0x2710);    //Í¨µÀ4¶î¶¨µçÁ÷10A
+	//SSPC_SendCmd(SSPC_ID,SSPC_FUNC_SAVE_FLASH,0,0);              //±£´æÅäÖÃ
 	
 }
 
@@ -522,7 +522,7 @@ void SSPC_CHN_Unlock(uint32_t now,uint8_t *data)
 	{
 	    if(lock_channel <= SSPC_CHN_4 && P1_UNLOCK_V)
 	    {
-		    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_UNLOCK,SSPC_CHN_1_4,0);/*ï¿½ï¿½ï¿½Í?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+		    SSPC_SendCmd(SSPC_ID,SSPC_FUNC_UNLOCK,SSPC_CHN_1_4,0);/* ½âËøÍ¨µÀ1-4 */
 	    }
 	    else if (lock_channel>= SSPC_CHN_5 && lock_channel <= SSPC_CHN_8 && P2_UNLOCK_V)
 	    {

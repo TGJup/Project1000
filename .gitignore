@@ -42,7 +42,6 @@ bin/
 *.crf
 *.i
 *.ii
-*.s
 *.su
 *.bak
 *.tmp
