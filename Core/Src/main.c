@@ -117,6 +117,7 @@ int main(void)
 	HAL_UART_Receive_IT(&huart1,(uint8_t*)&USART1_RXBuffer,1);
 	HAL_UART_Receive_IT(&huart3,(uint8_t*)&USART3_RXBuffer,1);
 	OpChn_Sys_Init();
+  FC_Data_Reset(&Read_data);
   /* USER CODE END 2 */
 
   /* Infinite loop */

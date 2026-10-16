@@ -21,7 +21,6 @@ extern FC_SendData Zero_data;
 EP_DataTypeDef ep_data;
 
 static  uint8_t MCU_PowerOn_Flag = 0;
-static  uint8_t Packet_Ready_flag;
 uint8_t USART1_TxBusy = 0;    // 串口1发送忙标志，1:发送中，0:空闲
 uint8_t USART3_TxBusy = 0;    // 串口3发送忙标志，1:发送中，0:空闲
 
@@ -36,12 +35,16 @@ uint32_t U1_last_tick = 0;           // 串口1最新时间
 uint8_t USART3_RXBuffer[1];          // 串口3接收缓冲区
 uint8_t USART3_TXBuffer[32];         // 串口3发送缓冲区
 uint8_t USART3_RxFrame[32];          // 串口3数据接收区
+uint8_t USART3_RxWork[32];           // 串口3中断装配区(未校验完的帧只写这里)
 uint8_t USART3_RxIdx    = 0;         // 串口3接收索引
 volatile uint8_t USART3_RxFinish = 0;// 串口3接收完成标志位
 static uint8_t U3_wait_ack = 0;      // 串口3等待确认标志
 uint32_t U3_last_tick = 0;           // 串口3最新时间
 //static uint8_t  U3_Data_Type;        // 涓插彛3鍙戦�佹暟鎹?绫诲瀷
 
+/* 超时刷新快照 */
+uint32_t Bat_last_tick = 0;      //电池数据最后更新时刻（EP_Parse_* 内刷新）
+uint32_t Bus_last_tick = 0;      //母线数据最后更新时刻（SSPC_CHN_Read 内刷新）
 
 /**
  * @brief  串口发送函数
@@ -84,29 +87,27 @@ void FC_Packet_Make(FC_SendData *data)
     USART1_TXBuffer[0] = FC_Packet_Head1;
     USART1_TXBuffer[1] = FC_Packet_Head2;
 
-    USART1_TXBuffer[2] = data->Vbus12H;
-    USART1_TXBuffer[3] = data->Vbus12L;
+    USART1_TXBuffer[2] = data->vBtry28H;
+    USART1_TXBuffer[3] = data->vBtry28L;
                          
-    USART1_TXBuffer[4] = data->Vchn8H;  
-    USART1_TXBuffer[5] = data->Vchn8L; 
-                         
-    USART1_TXBuffer[6] = data->Ichn8H; 
-    USART1_TXBuffer[7] = data->Ichn8L; 
+    USART1_TXBuffer[4] = data->vBtry12H;  
+    USART1_TXBuffer[5] = data->vBtry12L; 
+    USART1_TXBuffer[6] = data->vBus28H; 
+    USART1_TXBuffer[7] = data->vBus28L; 
                           
-    USART1_TXBuffer[8] = data->Ichn7H; 
-    USART1_TXBuffer[9] = data->Ichn7L; 
-                          
-    USART1_TXBuffer[10] = data->Ichn6H; 
-    USART1_TXBuffer[11] = data->Ichn6L; 
+    USART1_TXBuffer[8] = data->vBus12H; 
+    USART1_TXBuffer[9] = data->vBus12L; 
+    USART1_TXBuffer[10] = data->iBtry28H; 
+    USART1_TXBuffer[11] = data->iBtry28L; 
 	                        
-    USART1_TXBuffer[12] = data->Ichn5H; 
-    USART1_TXBuffer[13] = data->Ichn5L; 
+    USART1_TXBuffer[12] = data->iBtry12H; 
+    USART1_TXBuffer[13] = data->iBtry12L; 
                           
-    USART1_TXBuffer[14] = data->Ep_collect_V_H; 
-    USART1_TXBuffer[15] = data->Ep_collect_V_L; 
+    USART1_TXBuffer[14] = data->iGerator1H; 
+    USART1_TXBuffer[15] = data->iGerator1L; 
 		
-    USART1_TXBuffer[16] = data->Ep_Current_H; 
-    USART1_TXBuffer[17] = data->Ep_Current_L; 
+    USART1_TXBuffer[16] = data->iGerator2H; 
+    USART1_TXBuffer[17] = data->iGerator2L; 
     USART1_TXBuffer[18] = Calc_CheckSum(USART1_TXBuffer, 18);
 //  	OLED_ShowHexNum(100,1,USART1_TXBuffer[18],2,OLED_8X16);
 //  	OLED_Update();
@@ -210,10 +211,11 @@ uint8_t USART3_EP_RE(FC_SendData *data)
 	{
         if(buf[1] == EP_28V_Address)
         {
-            data->Ep_collect_V_H = buf[4];
-		    data->Ep_collect_V_L = buf[5];
-	        data->Ep_Current_H   = buf[8];
-		    data->Ep_Current_L   = buf[9];
+            data->vBtry28H = buf[4];
+		    data->vBtry28L = buf[5];
+	        data->iBtry28H = buf[8];
+		    data->iBtry28L = buf[9];
+            Bat_last_tick = HAL_GetTick();  // 更新电池数据新鲜度时间戳
 		    return temp =5;
         }
 		
@@ -294,6 +296,22 @@ uint8_t UART_TimeOut(UART_HandleTypeDef *huart)
     return 0;
 }
 
+/*
+*@brief  飞控数据重置
+*@param  d:飞控数据结构体指针
+*/
+void FC_Data_Reset(FC_SendData *d)
+{
+    d->vBtry28H = 0;    d->vBtry28L = 0;
+    d->vBtry12H = 0;    d->vBtry12L = 0;
+    d->vBus28H  = 0;    d->vBus28L  = 0;
+    d->vBus12H  = 0;    d->vBus12L  = 0;
+    d->iBtry28H = 0x75; d->iBtry28L = 0x30;   // 原始值 30000 = 0A
+    d->iBtry12H = 0x75; d->iBtry12L = 0x30;
+    d->iGerator1H = 0;  d->iGerator1L = 0;
+    d->iGerator2H = 0;  d->iGerator2L = 0;
+}
+
 /**
  * @brief 串口1轮询函数
  * @retval 
@@ -308,7 +326,7 @@ void USART1_LoopCall(void)
         if(tick_diff > FC_Zero_Time)
         {
             MCU_PowerOn_Flag = 1;    // 3秒过后上电标志位置1
-                U1_last_tick = tick_now; 
+            U1_last_tick = tick_now; 
             }
         else
         {
@@ -320,13 +338,30 @@ void USART1_LoopCall(void)
     }
     // 进入正常通讯，判断是否可以发送数据给飞控
     else
-    {
-        
-        if(tick_diff >= FC_Send_Cycle && Packet_Ready_flag == 1)
+    {               
+        if(tick_diff >= FC_Send_Cycle)
         {
-            Packet_Ready_flag = 0;
+            static FC_SendData tx;      //本次发送快照（不动 Read_data 本体）
+
+            tx = Read_data;
+
+            // 电池(RS485)断链：电压发 0，电流发 30000(=0.0A，协议为 30000 offset)
+            if(tick_now - Bat_last_tick > FC_BAT_TIMEOUT)
+            {
+                tx.vBtry28H = 0; tx.vBtry28L = 0;
+                tx.vBtry12H = 0; tx.vBtry12L = 0;
+                tx.iBtry28H = 0x75; tx.iBtry28L = 0x30;
+                tx.iBtry12H = 0x75; tx.iBtry12L = 0x30;
+            }
+            // 母线(SSPC)断链：母线电压发 0
+            if(tick_now - Bus_last_tick > FC_BUS_TIMEOUT)
+            {
+                tx.vBus28H = 0; tx.vBus28L = 0;
+                tx.vBus12H = 0; tx.vBus12L = 0;
+            }
+
             U1_last_tick = tick_now;
-            FC_Packet_Make(&Read_data); 
+            FC_Packet_Make(&tx);
         }
     }
 }
@@ -338,16 +373,13 @@ void USART1_LoopCall(void)
 void USART3_LoopCall(void)
 {
 	if(USART3_RxFinish == 1)
-		 {
-			  if(USART3_EP_RE(&Read_data)==5)
-            {
-                Packet_Ready_flag = 1;
-            }
-			  U3_wait_ack = 0;
-			  USART3_RxFinish = 0;
-		 }
+	{
+		USART3_EP_RE(&Read_data);            
+		U3_wait_ack = 0;
+        USART3_RxFinish = 0;
+    }
     /* 应答超时解锁：发查询后 EP_ACK_Timeout(100ms) 内没等到合法应答就解锁重查
-	   否则 U3_wait_ack 会永久停在 1 —— 串口3 只查一次，串口1 永久静默 */
+	   否则 U3_wait_ack 会永久停在 1 —— 串口3 只查一次，串口1 永久静默  */
 	if(U3_wait_ack == 1 && HAL_GetTick() - U3_last_tick > EP_ACK_Timeout)
 		{
 			U3_last_tick = HAL_GetTick();
@@ -422,29 +454,33 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  
 	else if(huart->Instance == USART3)
 	{
-		USART3_RxFrame[USART3_RxIdx++] = USART3_RXBuffer[0];
+		USART3_RxWork[USART3_RxIdx++] = USART3_RXBuffer[0];
     // 判断是否是0xA5
-        if(USART3_RxIdx == 1 && USART3_RxFrame[0] != EP_Packet_Head1)
+        if(USART3_RxIdx == 1 && USART3_RxWork[0] != EP_Packet_Head1)
         {
             USART3_RxIdx = 0;
         }
         else if(USART3_RxIdx >=2)
         {
-            if(USART3_RxFrame[0]==EP_Packet_Head1 && (USART3_RxFrame[1]==EP_28V_Address))
+            if(USART3_RxWork[0]==EP_Packet_Head1 && (USART3_RxWork[1]==EP_28V_Address))
             {
                 if(USART3_RxIdx >= EP_Rsp_Len)
                 {
                     uint16_t sum = 0;
                     for(uint8_t i = 0; i < EP_Rsp_Len-1; i++)
                     {
-                        sum += USART3_RxFrame[i];
+                        sum += USART3_RxWork[i];
                     }
                     uint8_t check = sum % 256;
     //						OLED_ShowHexNum(100,1,check,2,OLED_8X16);
     //						OLED_Update();
-                    if(check == USART3_RxFrame[12])
+                    if(check == USART3_RxWork[12])
                     {
-                        USART3_RxFinish = 1;
+                        if(USART3_RxFinish == 0)   // 上一帧已被主循环取走，才覆盖快照，避免读写撕裂
+                        {
+                            memcpy(USART3_RxFrame, USART3_RxWork, EP_Rsp_Len);   // 校验通过才整帧快照，公开给主循环
+                            USART3_RxFinish = 1;                                  // 拷贝完成后再置标志
+                        }
                     }
                     USART3_RxIdx = 0;
                 }

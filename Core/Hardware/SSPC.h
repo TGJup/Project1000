@@ -33,6 +33,8 @@ typedef struct{
 	uint16_t cnt;                //当前记录条数	
 }OpChn_t;
 
+
+
 void OpChn_Sys_Init(void);
 static void OpChn_Memory_Init(uint8_t ch);
 static uint8_t OpChn_IsFull(uint8_t ch);
@@ -41,4 +43,7 @@ uint8_t PrintALLChOp(uint8_t ch);
 void ChOp_Packet(uint8_t ch,uint32_t tick,uint16_t code,uint32_t param);
 uint8_t GetChnLastOpCmd(uint8_t chn, OpCmd_t *out_cmd);
 void GetAllChnLastOp(OpCmd_t out_list[8], uint8_t valid_flag[8]);
+
+
+
 #endif

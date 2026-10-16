@@ -58,6 +58,7 @@ volatile uint8_t  voltage_valid = 0;
 
 // 全局互斥标志：任何一台发动机正在启动计时中
 uint8_t ENG_Start_In_Progress;
+extern uint32_t Bus_last_tick;  //母线数据新鲜度时间戳（Serial.c定义，SSPC_CHN_Read内刷新）
 
 
 /**
@@ -562,19 +563,21 @@ void SSPC_CHN_Read(uint32_t now,FC_SendData* readdata,uint8_t data[8])
 	switch(data[3])
 	{
 		case SSPC_CHN_1:   break;
-		case SSPC_CHN_5:  if(data[2] == SSPC_STAT_REPORT_VOUT_I){readdata->Ichn5H = data[6];readdata->Ichn5L = data[7];}  break;
-		case SSPC_CHN_6:  if(data[2] == SSPC_STAT_REPORT_VOUT_I){readdata->Ichn6H = data[6];readdata->Ichn6L = data[7];}  break;
-	//case SSPC_CHN_7:   readdata->Ichn7H = data[6];readdata->Ichn7L = data[7];  break;
-		case SSPC_CHN_8:   readdata->Ichn8H = data[6];readdata->Ichn8L = data[7]; break;
-		case SSPC_CHN_5_8: readdata->Vchn8H = data[4];readdata->Vchn8L = data[5];
+	//	case SSPC_CHN_5:  if(data[2] == SSPC_STAT_REPORT_VOUT_I){readdata->Ichn5H = data[6];readdata->Ichn5L = data[7];}  break;
+	//	case SSPC_CHN_6:  if(data[2] == SSPC_STAT_REPORT_VOUT_I){readdata->Ichn6H = data[6];readdata->Ichn6L = data[7];}  break;
+	//	case SSPC_CHN_7:   readdata->Ichn7H = data[6];readdata->Ichn7L = data[7];  break;
+	//	case SSPC_CHN_8:   readdata->Ichn8H = data[6];readdata->Ichn8L = data[7]; break;
+		case SSPC_CHN_5_8: readdata->vBus28H = data[4];readdata->vBus28L = data[5];
 							//Vcheck_28Vbus(now,data[4],data[5]);
 							if (Byte2_TO_U16(data[4],data[5]) > 0x2710)
 							{P2_UNLOCK_V = 1;}
 							else{P2_UNLOCK_V = 0;}
+							Bus_last_tick = now;  // 更新母线数据新鲜度时间戳
 							break;
-		case SSPC_CHN_1_4 : readdata->Vbus12H = data[4];readdata->Vbus12L = data[5];
+		case SSPC_CHN_1_4 : readdata->vBus12H = data[4];readdata->vBus12L = data[5];
 							if(Byte2_TO_U16(data[4],data[5]) > 0x2710){P1_UNLOCK_V = 1;}
 							else{P1_UNLOCK_V = 0;}
+							Bus_last_tick = now;  // 更新母线数据新鲜度时间戳
 							break;
 		default :break;
 	}

@@ -2,38 +2,39 @@
 #define __Serial_H
 
 typedef struct{
-	uint16_t Vbus12H;
-	uint16_t Vchn8H;
-	uint16_t Ichn8H;
-	uint16_t Ichn7H;
-	uint16_t Ichn6H;
-	uint16_t Ichn5H;
-	
-	uint16_t Vbus12L;
-	uint16_t Vchn8L;
-	uint16_t Ichn8L;
-	uint16_t Ichn7L;
-	uint16_t Ichn6L;
-	uint16_t Ichn5L;
-	uint16_t Ep_collect_V_H;
-	uint16_t Ep_collect_V_L;
-	uint16_t Ep_Current_H;
-	uint16_t Ep_Current_L;
+	uint16_t vBtry28H;
+	uint16_t vBtry28L;
+	uint16_t vBtry12H;
+	uint16_t vBtry12L;
+	uint16_t vBus28H;
+	uint16_t vBus28L;
+	uint16_t vBus12H;
+	uint16_t vBus12L;
+	uint16_t iBtry28H;
+	uint16_t iBtry28L;
+	uint16_t iBtry12H;
+	uint16_t iBtry12L;
+	uint16_t iGerator1H;
+	uint16_t iGerator1L;
+	uint16_t iGerator2H;
+	uint16_t iGerator2L;
 }FC_SendData;
 
 typedef struct{
 	
 	uint16_t volt_acc;                   //ç´¯è®¡æ€»å‹
 	uint16_t volt_collect;               //é‡‡é›†æ€»å‹
-	int16_t  raw_current;                //ç”µæµåŸå§‹å€¼
-	int16_t  current;                    //å®é™…ç”µæµ = ç”µæµåŸå§‹å€¼ - 30000
-	uint16_t soc_raw;                    //å½“å‰ç”µé‡åŸå§‹å€¼
-	float    soc;                        //å½“å‰ç”µé‡å€¼
-	float    total_volt_acc_real;        //ç´¯è®¡æ€»å‹å®é™…å€¼
-	float    total_volt_collect_real;    //é‡‡é›†æ€»å‹å®é™…å€¼
+	int16_t  raw_current;                //ç”µæµåŸå§‹å€?
+	int16_t  current;                    //å®é™…ç”µæµ = ç”µæµåŸå§‹å€? - 30000
+	uint16_t soc_raw;                    //å½“å‰ç”µé‡åŸå§‹å€?
+	float    soc;                        //å½“å‰ç”µé‡å€?
+	float    total_volt_acc_real;        //ç´¯è®¡æ€»å‹å®é™…å€?
+	float    total_volt_collect_real;    //é‡‡é›†æ€»å‹å®é™…å€?
 	
 }EP_DataTypeDef;
 extern EP_DataTypeDef ep_data;
+#define FC_BAT_TIMEOUT   500U    //µç³Ø(RS485)Êı¾İ³¬Ê±(ms)£ºÂÖÑ¯ÖÜÆÚ 80ms£¬È¡ 6 ±¶ÓàÁ¿
+#define FC_BUS_TIMEOUT   5000U   //Ä¸Ïß(SSPC)Êı¾İ³¬Ê±(ms)£ºSSPC ÉÏ±¨ÖÜÆÚÔ¼ 2s£¬È¡ 2.5 ±¶ÓàÁ¿
 
 uint8_t UART_SendData(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t len);
 uint16_t Byte2_TO_U16(uint8_t high,uint8_t low);
@@ -52,5 +53,10 @@ uint8_t EP_Packet_Make(uint8_t cmd);
 void USART1_LoopCall(void);										
 void USART3_LoopCall(void);
 uint8_t UART_TimeOut(UART_HandleTypeDef *huart);
+/*
+*@brief  ·É¿ØÊı¾İÖØÖÃ
+*@param  d:·É¿ØÊı¾İ½á¹¹ÌåÖ¸Õë
+*/
+void FC_Data_Reset(FC_SendData *d);
 
 #endif
